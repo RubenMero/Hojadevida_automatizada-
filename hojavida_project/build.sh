@@ -9,6 +9,8 @@ pip install -r requirements.txt
 python manage.py collectstatic --no-input
 
 # 3. Crear las tablas en la base de datos de Render (Postgres)
+python manage.py makemigrations
+python manage.py migrate --run-syncdb
 python manage.py migrate
 
 # 4. Crear tu usuario automáticamente si no existe
