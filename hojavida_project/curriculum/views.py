@@ -100,36 +100,23 @@ def mi_perfil(request):
 # PANEL DE GESTION (como el admin de Django)
 @login_required
 def panel_gestion(request):
-    # Intentamos buscar el perfil marcado como activo
-    perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
+    # 1. Buscamos cualquier perfil que exista, sin filtros que bloqueen
+    perfil = DatosPersonales.objects.all().first()
     
-    # Si no hay uno activo, intentamos traer el último perfil que hayas creado
+    # 2. Si NO hay perfil, mandamos una página limpia con un botón para crear
     if not perfil:
-        perfil = DatosPersonales.objects.order_by('-id').first()
+        return render(request, 'curriculum/panel_gestion.html', {'sin_perfil': True})
     
-    # Si de plano NO EXISTE NINGUNO en la base de datos:
-    if not perfil:
-        messages.info(request, 'Bienvenido. Por favor, crea tu primer perfil para comenzar.')
-        # Cambia 'nombre_de_tu_vista_crear' por el name real de tu URL para crear perfil
-        # Si no lo tienes, puedes redirigir a un formulario de admin o creación.
-        return redirect('curriculum:agregar_datos_personales') 
-
-    # Si llegamos aquí, ya tenemos un perfil (el activo o el más reciente)
-    experiencias = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil)
-    reconocimientos = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil)
-    cursos = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil)
-    productos_academicos = ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil)
-    productos_laborales = ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil)
-    ventas = VentaGarage.objects.filter(idperfilconqueestaactivo=perfil)
-    
+    # 3. Si hay perfil, cargamos todo lo demás
     context = {
         'perfil': perfil,
-        'experiencias': experiencias,
-        'reconocimientos': reconocimientos,
-        'cursos': cursos,
-        'productos_academicos': productos_academicos,
-        'productos_laborales': productos_laborales,
-        'ventas': ventas,
+        'experiencias': ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil),
+        'reconocimientos': Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil),
+        'cursos': CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil),
+        'productos_academicos': ProductosAcademicos.objects.filter(idperfilconqueestaactivo=perfil),
+        'productos_laborales': ProductosLaborales.objects.filter(idperfilconqueestaactivo=perfil),
+        'ventas': VentaGarage.objects.filter(idperfilconqueestaactivo=perfil),
+        'sin_perfil': False
     }
     
     return render(request, 'curriculum/panel_gestion.html', context)
