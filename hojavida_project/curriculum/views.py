@@ -97,16 +97,24 @@ def mi_perfil(request):
 
 
 
-
 # PANEL DE GESTION (como el admin de Django)
 @login_required
 def panel_gestion(request):
+    # Intentamos buscar el perfil marcado como activo
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
     
+    # Si no hay uno activo, intentamos traer el último perfil que hayas creado
     if not perfil:
-        messages.error(request, 'No hay perfil creado.')
-        return redirect('curriculum:home')
+        perfil = DatosPersonales.objects.order_by('-id').first()
     
+    # Si de plano NO EXISTE NINGUNO en la base de datos:
+    if not perfil:
+        messages.info(request, 'Bienvenido. Por favor, crea tu primer perfil para comenzar.')
+        # Cambia 'nombre_de_tu_vista_crear' por el name real de tu URL para crear perfil
+        # Si no lo tienes, puedes redirigir a un formulario de admin o creación.
+        return redirect('curriculum:agregar_datos_personales') 
+
+    # Si llegamos aquí, ya tenemos un perfil (el activo o el más reciente)
     experiencias = ExperienciaLaboral.objects.filter(idperfilconqueestaactivo=perfil)
     reconocimientos = Reconocimientos.objects.filter(idperfilconqueestaactivo=perfil)
     cursos = CursosRealizados.objects.filter(idperfilconqueestaactivo=perfil)
