@@ -31,32 +31,30 @@ class SeleccionSeccionesForm(forms.ModelForm):
             'imprimir_productos_laborales': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'imprimir_venta_garage': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
-class class DatosPersonalesForm(forms.ModelForm):
-    class Meta:
-        model = DatosPersonales
-        fields = [
-            'foto_perfil',
-            'descripcionperfil', 'nombres', 'apellidos', 'nacionalidad',
-            'lugarnacimiento', 'fechanacimiento', 'numerocedula', 'sexo',
-            'estadocivil', 'licenciaconducir', 'telefonoconvencional',
-            'telefonofijo', 'direcciontrabajo', 'direcciondomiciliaria', 'sitioweb'
-        ]
-        widgets = {
-            'fechanacimiento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'descripcionperfil': forms.TextInput(attrs={'placeholder': 'Ej: Desarrollador Full Stack'}),
-            'nombres': forms.TextInput(attrs={'placeholder': 'Nombres completos'}),
-            'apellidos': forms.TextInput(attrs={'placeholder': 'Apellidos completos'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(DatosPersonalesForm, self).__init__(*args, **kwargs)
-        # LÓGICA DE BLOQUEO:
-        # Si la instancia ya tiene una PK (ID), significa que el registro ya existe en la BD
-        if self.instance and self.instance.pk:
-            # Si ya tiene una fecha de nacimiento registrada, bloqueamos el campo
-            if self.instance.fechanacimiento:
-                self.fields['fechanacimiento'].disabled = True
-                self.fields['fechanacimiento'].help_text = "La fecha de nacimiento es un dato fijo y no puede modificarse."
+        
+        class DatosPersonalesForm(forms.ModelForm):
+            class Meta:
+                model = DatosPersonales
+                fields = [
+                    'foto_perfil',
+                    'descripcionperfil', 'nombres', 'apellidos', 'nacionalidad',
+                    'lugarnacimiento', 'fechanacimiento', 'numerocedula', 'sexo',
+                    'estadocivil', 'licenciaconducir', 'telefonoconvencional',
+                    'telefonofijo', 'direcciontrabajo', 'direcciondomiciliaria', 'sitioweb'
+                ]
+                widgets = {
+                    'fechanacimiento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+                    'descripcionperfil': forms.TextInput(attrs={'placeholder': 'Ej: Desarrollador Full Stack'}),
+                    'nombres': forms.TextInput(attrs={'placeholder': 'Nombres completos'}),
+                    'apellidos': forms.TextInput(attrs={'placeholder': 'Apellidos completos'}),
+                    }
+                
+                def __init__(self, *args, **kwargs):
+                    super(DatosPersonalesForm, self).__init__(*args, **kwargs)
+                    if self.instance and self.instance.pk:
+                        if self.instance.fechanacimiento:
+                            self.fields['fechanacimiento'].disabled = True
+                            self.fields['fechanacimiento'].help_text = "La fecha de nacimiento es un dato fijo y no puede modificarse."
 
 
 class ExperienciaLaboralForm(forms.ModelForm):
