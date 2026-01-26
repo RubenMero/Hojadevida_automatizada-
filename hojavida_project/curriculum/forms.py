@@ -42,11 +42,28 @@ class DatosPersonalesForm(forms.ModelForm):
             'telefonofijo', 'direcciontrabajo', 'direcciondomiciliaria', 'sitioweb'
         ]
         widgets = {
-            'fechanacimiento': forms.DateInput(attrs={'type': 'date'}),
-            'descripcionperfil': forms.TextInput(attrs={'placeholder': 'Ej: Desarrollador Full Stack'}),
-            'nombres': forms.TextInput(attrs={'placeholder': 'Nombres completos'}),
-            'apellidos': forms.TextInput(attrs={'placeholder': 'Apellidos completos'}),
+            'fechanacimiento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'descripcionperfil': forms.TextInput(attrs={'placeholder': 'Ej: Desarrollador Full Stack', 'class': 'form-control'}),
+            'nombres': forms.TextInput(attrs={'placeholder': 'Nombres completos', 'class': 'form-control'}),
+            'apellidos': forms.TextInput(attrs={'placeholder': 'Apellidos completos', 'class': 'form-control'}),
+            # He añadido 'form-control' a los demás para que se vean bien con tu CSS
         }
+
+    def __init__(self, *args, **kwargs):
+        super(DatosPersonalesForm, self).__init__(*args, **kwargs)
+        
+        # Lógica de bloqueo para edición
+        if self.instance and self.instance.pk:
+            # Si el perfil ya existe en la base de datos (estamos editando)
+            
+            if self.instance.fechanacimiento:
+                # Bloqueamos el campo en el HTML y el servidor lo ignorará si intentan cambiarlo
+                self.fields['fechanacimiento'].disabled = True
+                self.fields['fechanacimiento'].help_text = "Dato protegido: No se puede modificar."
+
+            if self.instance.numerocedula:
+                # Opcional: Bloqueamos también la cédula por seguridad
+                self.fields['numerocedula'].disabled = True
 
 class ExperienciaLaboralForm(forms.ModelForm):
     class Meta:
